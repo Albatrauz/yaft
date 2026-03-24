@@ -26,3 +26,12 @@ export const filaments = pgTable('filaments', {
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })
+
+export const apiTokens = pgTable('api_tokens', {
+  id: serial('id').primaryKey(),
+  token: varchar('token', { length: 64 }).notNull().unique(),
+  name: varchar('name', { length: 255 }).notNull(),
+  userId: integer('user_id').notNull().references(() => users.id),
+  lastUsedAt: timestamp('last_used_at'),
+  createdAt: timestamp('created_at').defaultNow().notNull(),
+})

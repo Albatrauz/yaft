@@ -17,13 +17,13 @@ const createSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event)
+  const { user } = await requireAuth(event)
   const body = await readValidatedBody(event, createSchema.parse)
 
   const [filament] = await db.insert(filaments).values({
     ...body,
     weightRemaining: body.weightRemaining ?? body.weightTotal,
-    userId: session.user.id,
+    userId: user.id,
   }).returning()
 
   return filament

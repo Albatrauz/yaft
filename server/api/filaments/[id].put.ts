@@ -18,14 +18,14 @@ const updateSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event)
+  const { user } = await requireAuth(event)
   const id = Number(getRouterParam(event, 'id'))
   const body = await readValidatedBody(event, updateSchema.parse)
 
   const [filament] = await db
     .update(filaments)
     .set({ ...body, updatedAt: new Date() })
-    .where(and(eq(filaments.id, id), eq(filaments.userId, session.user.id)))
+    .where(and(eq(filaments.id, id), eq(filaments.userId, user.id)))
     .returning()
 
   if (!filament) {
