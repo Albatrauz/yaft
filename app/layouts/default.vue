@@ -21,6 +21,23 @@ async function logout() {
           <span class="text-lg font-semibold tracking-tight">YAFT</span>
         </NuxtLink>
 
+        <nav class="flex items-center gap-6">
+          <NuxtLink
+            to="/"
+            class="text-sm transition-colors"
+            :class="$route.path === '/' ? 'text-text' : 'text-text-muted hover:text-text'"
+          >
+            Inventory
+          </NuxtLink>
+          <NuxtLink
+            to="/tools/calculator"
+            class="text-sm transition-colors"
+            :class="$route.path.startsWith('/tools') ? 'text-text' : 'text-text-muted hover:text-text'"
+          >
+            Calculator
+          </NuxtLink>
+        </nav>
+
         <div class="flex items-center gap-4">
           <span class="text-sm text-text-muted">{{ user?.name }}</span>
           <button
