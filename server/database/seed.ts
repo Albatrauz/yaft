@@ -1,8 +1,10 @@
 import 'dotenv/config'
 import { drizzle } from 'drizzle-orm/node-postgres'
+import { eq } from 'drizzle-orm'
 import pg from 'pg'
-import bcrypt from 'bcrypt'
 import * as schema from './schema'
+import { betterAuth } from 'better-auth'
+import { drizzleAdapter } from 'better-auth/adapters/drizzle'
 
 async function seed() {
   const pool = new pg.Pool(
@@ -18,19 +20,49 @@ async function seed() {
   )
   const db = drizzle(pool, { schema })
 
+  const auth = betterAuth({
+    database: drizzleAdapter(db, { provider: 'pg' }),
+    emailAndPassword: { enabled: true },
+    baseURL: process.env.BETTER_AUTH_URL || 'http://localhost:3000',
+    secret: process.env.BETTER_AUTH_SECRET || 'seed-secret-at-least-32-characters-long',
+  })
+
   console.log('Seeding database...')
 
-  // Create admin user
-  const passwordHash = await bcrypt.hash(process.env.ADMIN_PASSWORD || 'admin', 10)
-  const [user] = await db.insert(schema.users).values({
-    email: process.env.ADMIN_EMAIL || 'admin@yaft.local',
-    passwordHash,
-    name: 'Admin',
-  }).onConflictDoNothing().returning()
+  const adminEmail = process.env.ADMIN_EMAIL || 'admin@yaft.local'
 
-  const userId = user?.id ?? 1
+  // Create admin user via better-auth API, or find existing
+  let userId: string
+  try {
+    const result = await auth.api.signUpEmail({
+      body: {
+        email: adminEmail,
+        password: process.env.ADMIN_PASSWORD || 'admin123',
+        name: 'Admin',
+      },
+    })
+    userId = result.user.id
+    console.log(`Created admin user ${userId}`)
+  } catch {
+    // User likely already exists — look up by exact email
+    const [existingUser] = await db
+      .select()
+      .from(schema.user)
+      .where(eq(schema.user.email, adminEmail))
+    if (!existingUser) {
+      throw new Error(`Failed to create or find admin user with email ${adminEmail}`)
+    }
+    userId = existingUser.id
+    console.log(`Found existing admin user ${userId}`)
+  }
 
-  // Seed filaments
+  await seedFilaments(db, userId)
+
+  await pool.end()
+  process.exit(0)
+}
+
+async function seedFilaments(db: any, userId: string) {
   const filamentData = [
     {
       brand: 'Bambu Lab',
@@ -157,9 +189,6 @@ async function seed() {
   await db.insert(schema.filaments).values(filamentData).onConflictDoNothing()
 
   console.log(`Seeded ${filamentData.length} filaments for user ${userId}`)
-
-  await pool.end()
-  process.exit(0)
 }
 
 seed().catch((err) => {

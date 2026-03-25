@@ -1,15 +1,57 @@
-import { pgTable, serial, varchar, text, real, integer, timestamp, date } from 'drizzle-orm/pg-core'
+import { pgTable, text, varchar, real, integer, timestamp, date, boolean } from 'drizzle-orm/pg-core'
 
-export const users = pgTable('users', {
-  id: serial('id').primaryKey(),
-  email: varchar('email', { length: 255 }).notNull().unique(),
-  passwordHash: varchar('password_hash', { length: 255 }).notNull(),
-  name: varchar('name', { length: 255 }).notNull(),
-  createdAt: timestamp('created_at').defaultNow().notNull(),
+// ── better-auth tables ──────────────────────────────────────────────────────
+
+export const user = pgTable('user', {
+  id: text('id').primaryKey(),
+  name: text('name').notNull(),
+  email: text('email').notNull().unique(),
+  emailVerified: boolean('email_verified').notNull().default(false),
+  image: text('image'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
 })
 
+export const session = pgTable('session', {
+  id: text('id').primaryKey(),
+  expiresAt: timestamp('expires_at').notNull(),
+  token: text('token').notNull().unique(),
+  ipAddress: text('ip_address'),
+  userAgent: text('user_agent'),
+  userId: text('user_id').notNull().references(() => user.id),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
+
+export const account = pgTable('account', {
+  id: text('id').primaryKey(),
+  accountId: text('account_id').notNull(),
+  providerId: text('provider_id').notNull(),
+  userId: text('user_id').notNull().references(() => user.id),
+  accessToken: text('access_token'),
+  refreshToken: text('refresh_token'),
+  idToken: text('id_token'),
+  accessTokenExpiresAt: timestamp('access_token_expires_at'),
+  refreshTokenExpiresAt: timestamp('refresh_token_expires_at'),
+  scope: text('scope'),
+  password: text('password'),
+  createdAt: timestamp('created_at').notNull().defaultNow(),
+  updatedAt: timestamp('updated_at').notNull().defaultNow(),
+})
+
+export const verification = pgTable('verification', {
+  id: text('id').primaryKey(),
+  identifier: text('identifier').notNull(),
+  value: text('value').notNull(),
+  expiresAt: timestamp('expires_at').notNull(),
+  createdAt: timestamp('created_at').defaultNow(),
+  updatedAt: timestamp('updated_at').defaultNow(),
+})
+
+// ── application tables ──────────────────────────────────────────────────────
+
 export const filaments = pgTable('filaments', {
-  id: serial('id').primaryKey(),
+  id: integer('id').primaryKey().generatedAlwaysAsIdentity(),
   brand: varchar('brand', { length: 255 }).notNull(),
   type: varchar('type', { length: 100 }).notNull(),
   colorName: varchar('color_name', { length: 255 }).notNull(),
@@ -22,7 +64,7 @@ export const filaments = pgTable('filaments', {
   ironingFlow: real('ironing_flow'),
   ironingSpacing: real('ironing_spacing'),
   notes: text('notes'),
-  userId: integer('user_id').notNull().references(() => users.id),
+  userId: text('user_id').notNull().references(() => user.id),
   createdAt: timestamp('created_at').defaultNow().notNull(),
   updatedAt: timestamp('updated_at').defaultNow().notNull(),
 })

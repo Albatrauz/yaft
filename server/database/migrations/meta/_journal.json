@@ -8,6 +8,13 @@
       "when": 1773575896349,
       "tag": "0000_long_dracula",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1774490000000,
+      "tag": "0001_add_better_auth",
+      "breakpoints": true
     }
   ]
 }

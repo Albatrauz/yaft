@@ -1,8 +1,10 @@
 <script setup lang="ts">
-const { loggedIn, user, clear } = useUserSession()
+const session = authClient.useSession()
+const loggedIn = computed(() => !!session.value.data)
+const user = computed(() => session.value.data?.user)
 
 async function logout() {
-  await clear()
+  await authClient.signOut()
   navigateTo('/login')
 }
 </script>

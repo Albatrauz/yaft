@@ -1,5 +1,6 @@
 import { z } from 'zod'
 import { filaments } from '../../database/schema'
+import { requireAuth } from '../../utils/requireAuth'
 
 const createSchema = z.object({
   brand: z.string().min(1).max(255),
@@ -17,7 +18,7 @@ const createSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event)
+  const session = await requireAuth(event)
   const body = await readValidatedBody(event, createSchema.parse)
 
   const [filament] = await db.insert(filaments).values({
