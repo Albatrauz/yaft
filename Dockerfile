@@ -22,6 +22,7 @@ COPY --from=build /app/package.json /app/package.json
 COPY --from=build /app/drizzle.config.ts /app/drizzle.config.ts
 COPY --from=build /app/server/database/schema.ts /app/server/database/schema.ts
 COPY --from=build /app/server/database/seed.ts /app/server/database/seed.ts
+COPY --from=build /app/server/utils /app/server/utils
 
 ENV NODE_ENV=production
 ENV HOST=0.0.0.0

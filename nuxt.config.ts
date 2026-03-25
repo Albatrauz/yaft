@@ -4,7 +4,7 @@ export default defineNuxtConfig({
   compatibilityDate: '2025-07-15',
   devtools: { enabled: true },
 
-  modules: ['nuxt-auth-utils'],
+  modules: [],
 
   css: ['~/assets/css/main.css'],
 
@@ -24,14 +24,17 @@ export default defineNuxtConfig({
   },
 
   runtimeConfig: {
-    sessionPassword: process.env.NUXT_SESSION_PASSWORD,
+    betterAuthSecret: process.env.BETTER_AUTH_SECRET,
+    betterAuthUrl: process.env.BETTER_AUTH_URL,
+    githubClientId: process.env.GITHUB_CLIENT_ID,
+    githubClientSecret: process.env.GITHUB_CLIENT_SECRET,
+    googleClientId: process.env.GOOGLE_CLIENT_ID,
+    googleClientSecret: process.env.GOOGLE_CLIENT_SECRET,
     databaseUrl: process.env.DATABASE_URL,
     dbHost: process.env.DB_HOST,
     dbPort: process.env.DB_PORT,
     dbUser: process.env.DB_USER,
     dbPassword: process.env.DB_PASSWORD,
     dbName: process.env.DB_NAME,
-    adminEmail: process.env.ADMIN_EMAIL,
-    adminPassword: process.env.ADMIN_PASSWORD,
   },
 })

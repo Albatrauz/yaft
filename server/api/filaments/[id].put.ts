@@ -1,6 +1,7 @@
 import { z } from 'zod'
 import { eq, and } from 'drizzle-orm'
 import { filaments } from '../../database/schema'
+import { requireAuth } from '../../utils/requireAuth'
 
 const updateSchema = z.object({
   brand: z.string().min(1).max(255).optional(),
@@ -18,7 +19,7 @@ const updateSchema = z.object({
 })
 
 export default defineEventHandler(async (event) => {
-  const session = await requireUserSession(event)
+  const session = await requireAuth(event)
   const id = Number(getRouterParam(event, 'id'))
   const body = await readValidatedBody(event, updateSchema.parse)
 
