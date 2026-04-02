@@ -8,6 +8,8 @@ export default defineNuxtRouteMiddleware(async (to) => {
     isAuthenticated = !!event?.context.auth
   } else {
     const session = authClient.useSession()
+    // Wait for the session to finish loading before checking auth state
+    if (session.value.isPending) return
     isAuthenticated = !!session.value.data
   }
 

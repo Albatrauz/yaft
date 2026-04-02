@@ -54,13 +54,16 @@ async function submit() {
 <template>
   <div class="mx-auto max-w-2xl">
     <div class="mb-6 flex items-center gap-4">
-      <NuxtLink to="/" class="text-text-dim hover:text-text transition-colors">&larr;</NuxtLink>
+      <NuxtLink to="/" class="text-text-dim transition-all hover:-translate-x-0.5 hover:text-text">&larr;</NuxtLink>
       <h1 class="text-xl font-bold tracking-tight">Edit Filament</h1>
-      <div class="h-4 w-4 rounded-sm" :style="{ backgroundColor: form.colorHex }" />
+      <div
+        class="h-5 w-5 rounded-full ring-2 ring-white/10 transition-colors"
+        :style="{ backgroundColor: form.colorHex }"
+      />
     </div>
 
-    <form class="border border-border bg-surface p-6" @submit.prevent="submit">
-      <div v-if="error" class="mb-4 border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger">
+    <form class="form-panel animate-fade-slide-in border border-border bg-surface p-6" @submit.prevent="submit">
+      <div v-if="error" class="mb-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger">
         {{ error }}
       </div>
 
@@ -85,9 +88,13 @@ async function submit() {
 
         <div>
           <label class="mb-1 block text-sm text-text-muted">Color</label>
-          <div class="flex gap-2">
-            <input v-model="form.colorHex" type="color" class="h-[38px] w-12 cursor-pointer border-border p-1" />
+          <div class="flex items-center gap-2">
+            <input v-model="form.colorHex" type="color" class="h-[38px] w-12 cursor-pointer rounded-md border-border p-1" />
             <input v-model="form.colorHex" type="text" class="flex-1 font-mono" pattern="^#[0-9a-fA-F]{6}$" />
+            <div
+              class="h-[38px] w-[38px] shrink-0 rounded-md ring-1 ring-white/10 transition-colors"
+              :style="{ backgroundColor: form.colorHex }"
+            />
           </div>
         </div>
 
@@ -125,7 +132,7 @@ async function submit() {
         </div>
       </div>
 
-      <div class="mt-6 border-t border-border pt-4">
+      <div class="mt-6 border-t border-border/50 pt-4">
         <h3 class="mb-3 text-sm font-semibold uppercase tracking-wider text-text-dim">Ironing Settings</h3>
         <div class="grid gap-4 sm:grid-cols-3">
           <div>
@@ -152,13 +159,13 @@ async function submit() {
         <button
           type="submit"
           :disabled="loading"
-          class="bg-accent px-6 py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-accent-hover disabled:opacity-50"
+          class="btn-primary rounded-lg bg-accent px-6 py-2.5 text-sm font-semibold text-bg hover:bg-accent-hover disabled:opacity-50"
         >
           {{ loading ? 'Saving...' : 'Save Changes' }}
         </button>
         <NuxtLink
           to="/"
-          class="border border-border px-6 py-2.5 text-sm text-text-muted transition-colors hover:border-border-strong hover:text-text"
+          class="btn-ghost border border-border px-6 py-2.5 text-sm text-text-muted hover:border-border-strong hover:text-text"
         >
           Cancel
         </NuxtLink>

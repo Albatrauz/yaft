@@ -111,22 +111,30 @@ function remainingColor(percent: number) {
   <div class="mx-auto max-w-2xl">
     <!-- Header -->
     <div class="mb-6 flex items-center gap-4">
-      <NuxtLink to="/" class="text-text-dim hover:text-text transition-colors">&larr;</NuxtLink>
+      <NuxtLink to="/" class="text-text-dim transition-all hover:-translate-x-0.5 hover:text-text">&larr;</NuxtLink>
       <h1 class="text-xl font-bold tracking-tight">Filament Calculator</h1>
     </div>
 
     <!-- Drop Zone -->
     <div
       v-if="!file"
-      class="flex cursor-pointer flex-col items-center justify-center border-2 border-dashed p-12 transition-colors"
-      :class="dragging ? 'border-accent bg-accent/5' : 'border-border bg-surface'"
+      class="flex cursor-pointer flex-col items-center justify-center rounded-xl border-2 border-dashed p-12 transition-all duration-300"
+      :class="dragging
+        ? 'border-accent bg-accent/5 scale-[1.01] shadow-lg shadow-accent/10'
+        : 'border-border bg-surface hover:border-border-strong hover:bg-surface-hover'"
       @dragover.prevent="dragging = true"
       @dragenter.prevent="dragging = true"
       @dragleave.prevent="dragging = false"
       @drop.prevent="onDrop"
       @click="fileInputRef?.click()"
     >
-      <svg class="mb-4 h-10 w-10 text-text-dim" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <svg
+        class="mb-4 h-10 w-10 transition-transform duration-300"
+        :class="dragging ? 'text-accent -translate-y-1' : 'text-text-dim'"
+        fill="none"
+        stroke="currentColor"
+        viewBox="0 0 24 24"
+      >
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
       </svg>
       <p class="text-sm text-text-muted">Drop <span class="font-mono text-text">.stl</span> or <span class="font-mono text-text">.3mf</span> file here</p>
@@ -141,7 +149,7 @@ function remainingColor(percent: number) {
     </div>
 
     <!-- File Loaded Bar -->
-    <div v-else class="flex items-center justify-between border border-border bg-surface px-4 py-3">
+    <div v-else class="flex items-center justify-between rounded-lg border border-border bg-surface px-4 py-3">
       <div class="flex items-center gap-3">
         <svg class="h-5 w-5 text-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
@@ -152,7 +160,7 @@ function remainingColor(percent: number) {
         </div>
       </div>
       <button
-        class="text-text-dim hover:text-text transition-colors"
+        class="rounded-md p-1 text-text-dim transition-colors hover:bg-danger/10 hover:text-danger"
         @click="clearFile"
       >
         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -162,19 +170,22 @@ function remainingColor(percent: number) {
     </div>
 
     <!-- Parsing State -->
-    <div v-if="parsing" class="mt-4 border border-border bg-surface px-4 py-3 text-sm text-text-muted">
-      Parsing...
+    <div v-if="parsing" class="mt-4 rounded-lg border border-border bg-surface px-4 py-3 text-sm text-text-muted">
+      <div class="flex items-center gap-2">
+        <div class="h-1.5 w-1.5 animate-pulse rounded-full bg-accent" />
+        Analyzing mesh...
+      </div>
     </div>
 
     <!-- Parse Error -->
-    <div v-if="parseError" class="mt-4 border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
+    <div v-if="parseError" class="mt-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-3 text-sm text-danger">
       {{ parseError }}
     </div>
 
     <!-- Settings + Results -->
     <template v-if="mesh && !parsing">
       <!-- Settings Panel -->
-      <div class="mt-4 border border-border bg-surface p-6">
+      <div class="mt-4 rounded-lg border border-border bg-surface p-6">
         <h2 class="mb-4 text-sm font-semibold uppercase tracking-wider text-text-dim">Settings</h2>
 
         <div class="grid gap-6 sm:grid-cols-2">
@@ -188,7 +199,7 @@ function remainingColor(percent: number) {
                 min="0"
                 max="100"
                 step="5"
-                class="h-1.5 flex-1 cursor-pointer appearance-none bg-border accent-accent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent"
+                class="h-1.5 flex-1 cursor-pointer appearance-none rounded-full bg-border accent-accent [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-accent"
               />
               <span class="w-12 text-right font-mono text-sm text-text">{{ infill }}%</span>
             </div>
@@ -198,17 +209,17 @@ function remainingColor(percent: number) {
           <div>
             <label class="mb-1 block text-sm text-text-muted">Material</label>
             <!-- Mode toggle -->
-            <div class="mb-2 flex">
+            <div class="mb-2 flex overflow-hidden rounded-md">
               <button
-                class="flex-1 py-1.5 text-xs font-medium transition-colors"
-                :class="materialMode === 'type' ? 'bg-accent text-bg' : 'border border-border text-text-muted hover:text-text'"
+                class="flex-1 py-1.5 text-xs font-medium transition-all"
+                :class="materialMode === 'type' ? 'bg-accent text-bg' : 'bg-bg text-text-muted hover:text-text'"
                 @click="materialMode = 'type'"
               >
                 Type
               </button>
               <button
-                class="flex-1 py-1.5 text-xs font-medium transition-colors"
-                :class="materialMode === 'spool' ? 'bg-accent text-bg' : 'border border-border text-text-muted hover:text-text'"
+                class="flex-1 py-1.5 text-xs font-medium transition-all"
+                :class="materialMode === 'spool' ? 'bg-accent text-bg' : 'bg-bg text-text-muted hover:text-text'"
                 @click="materialMode = 'spool'"
               >
                 My Spools
@@ -246,7 +257,7 @@ function remainingColor(percent: number) {
       </div>
 
       <!-- Results -->
-      <div class="mt-4 border border-border bg-surface p-6">
+      <div class="mt-4 rounded-lg border border-border bg-surface p-6">
         <div class="mb-4 flex items-baseline justify-between text-sm">
           <span class="text-text-dim">Triangles</span>
           <span class="font-mono text-text-muted">{{ result?.triangleCount.toLocaleString() }}</span>
@@ -259,11 +270,11 @@ function remainingColor(percent: number) {
 
         <div class="flex items-baseline justify-between">
           <span class="text-sm text-text-dim">Estimated weight</span>
-          <span class="text-3xl font-mono font-bold text-accent">{{ result?.weight.toFixed(1) }}g</span>
+          <span class="inline-block text-3xl font-mono font-bold text-accent transition-transform hover:scale-105">{{ result?.weight.toFixed(1) }}g</span>
         </div>
 
         <!-- Spool comparison -->
-        <div v-if="spoolComparison && selectedSpool" class="mt-4 border-t border-border pt-4">
+        <div v-if="spoolComparison && selectedSpool" class="mt-4 border-t border-border/50 pt-4">
           <div class="mb-2 flex items-center justify-between text-sm">
             <span class="text-text-muted">
               <span :style="{ color: selectedSpool.colorHex }">&bull;</span>
@@ -276,9 +287,9 @@ function remainingColor(percent: number) {
               </span>
             </span>
           </div>
-          <div class="h-1.5 w-full bg-border">
+          <div class="h-2 w-full overflow-hidden rounded-full bg-border/50">
             <div
-              class="h-full transition-all"
+              class="h-full rounded-full animate-bar-fill transition-all"
               :class="remainingColor(remainingPercent(selectedSpool))"
               :style="{ width: `${remainingPercent(selectedSpool)}%` }"
             />

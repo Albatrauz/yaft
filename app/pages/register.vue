@@ -50,18 +50,18 @@ function loginWithGoogle() {
 <template>
   <div class="flex min-h-[80vh] items-center justify-center">
     <form
-      class="w-full max-w-sm border border-border bg-surface p-8"
+      class="form-panel w-full max-w-sm animate-fade-slide-in border border-border bg-surface p-8"
       @submit.prevent="register"
     >
       <div class="mb-8 text-center">
-        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center bg-accent text-bg font-mono text-lg font-bold">
+        <div class="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-bg font-mono text-lg font-bold transition-transform duration-500 hover:rotate-[360deg]">
           YF
         </div>
         <h1 class="text-xl font-semibold tracking-tight">Create account</h1>
         <p class="mt-1 text-sm text-text-muted">Start tracking your filaments</p>
       </div>
 
-      <div v-if="error" class="mb-4 border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger">
+      <div v-if="error" class="mb-4 rounded-lg border border-danger/30 bg-danger/10 px-4 py-2 text-sm text-danger">
         {{ error }}
       </div>
 
@@ -111,7 +111,7 @@ function loginWithGoogle() {
         <button
           type="submit"
           :disabled="loading"
-          class="w-full bg-accent py-2.5 text-sm font-semibold text-bg transition-colors hover:bg-accent-hover disabled:opacity-50"
+          class="btn-primary w-full rounded-lg bg-accent py-2.5 text-sm font-semibold text-bg hover:bg-accent-hover disabled:opacity-50"
         >
           {{ loading ? 'Creating account...' : 'Sign up' }}
         </button>
@@ -131,7 +131,7 @@ function loginWithGoogle() {
           <button
             v-if="providers?.github"
             type="button"
-            class="flex flex-1 items-center justify-center gap-2 border border-border py-2.5 text-sm text-text transition-colors hover:bg-bg"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
             @click="loginWithGithub"
           >
             GitHub
@@ -139,7 +139,7 @@ function loginWithGoogle() {
           <button
             v-if="providers?.google"
             type="button"
-            class="flex flex-1 items-center justify-center gap-2 border border-border py-2.5 text-sm text-text transition-colors hover:bg-bg"
+            class="flex flex-1 items-center justify-center gap-2 rounded-lg border border-border py-2.5 text-sm text-text transition-colors hover:bg-surface-hover"
             @click="loginWithGoogle"
           >
             Google
