@@ -1,6 +1,7 @@
 {
   "name": "yaft",
   "type": "module",
+  "packageManager": "pnpm@10.34.7",
   "private": true,
   "scripts": {
     "build": "nuxt build",
